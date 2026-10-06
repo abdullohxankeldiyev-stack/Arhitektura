@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA Architecture Studio | Kelajak Me'morchiligi</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fffbe hold',
+              100: '#fef3c7',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            slate: {
+              850: '#111827',
+              950: '#030712'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js CDN & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    /* Glassmorphism utility */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .light .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* Gradient Ambient Glow */
+    .amber-glow {
+      box-shadow: 0 0 50px -10px rgba(217, 119, 6, 0.35);
+    }
+
+    .amber-glow-sm {
+      box-shadow: 0 0 25px -5px rgba(217, 119, 6, 0.25);
+    }
+
+    /* Custom Range Slider Styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 22px;
+      width: 22px;
+      border-radius: 50%;
+      background: #d97706;
+      cursor: pointer;
+      margin-top: -8px;
+      box-shadow: 0 0 10px rgba(217, 119, 6, 0.8);
+      border: 2px solid #ffffff;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: #334155;
+      border-radius: 3px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a364f;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d97706;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 transition-colors duration-300 antialiased selection:bg-brand-600 selection:text-white">
+
+  <!-- HEADER / NAVIGATION -->
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto glass-panel rounded-2xl px-6 py-3.5 flex items-center justify-between shadow-2xl">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg group-hover:rotate-6 transition-transform duration-300">
+          A
+        </div>
+        <div>
+          <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-white via-slate-200 to-brand-500 bg-clip-text text-transparent">AURA</span>
+          <span class="block text-[10px] tracking-widest text-slate-400 font-semibold uppercase -mt-1">ARCHITECTURE</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#about" class="hover:text-brand-500 transition-colors">Biz Haqimizda</a>
+        <a href="#projects" class="hover:text-brand-500 transition-colors">Loyihalar</a>
+        <a href="#3d-explorer" class="hover:text-brand-500 transition-colors flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+          3D Explorer
+        </a>
+        <a href="#calculator" class="hover:text-brand-500 transition-colors">Kalkulyator</a>
+        <a href="#process" class="hover:text-brand-500 transition-colors">Jarayon</a>
+        <a href="#team" class="hover:text-brand-500 transition-colors">Jamoa</a>
+        <a href="#contact" class="hover:text-brand-500 transition-colors">Aloqa</a>
+      </nav>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle" title="Mavzuni o'zgartirish" class="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-colors">
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-brand-400"></i>
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden text-slate-700"></i>
+        </button>
+
+        <!-- CTA Button -->
+        <button onclick="openBookingModal()" class="hidden sm:flex items-center gap-2 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-slate-950 font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl shadow-lg amber-glow-sm hover:scale-[1.02] active:scale-95 transition-all">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Konsultatsiya</span>
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-btn" class="lg:hidden p-2.5 rounded-xl bg-slate-900 text-slate-200 border border-slate-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-drawer" class="fixed inset-y-0 right-0 w-80 bg-slate-950/95 backdrop-blur-2xl border-l border-slate-800 p-6 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-brand-500 text-slate-950 font-bold flex items-center justify-center">A</div>
+            <span class="font-bold text-lg">AURA Studio</span>
+          </div>
+          <button id="close-drawer-btn" class="p-2 text-slate-400 hover:text-white">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div class="flex flex-col gap-5 my-8 text-base font-medium text-slate-300">
+          <a href="#about" class="mobile-nav-link hover:text-brand-500">Biz Haqimizda</a>
+          <a href="#projects" class="mobile-nav-link hover:text-brand-500">Loyihalar</a>
+          <a href="#3d-explorer" class="mobile-nav-link hover:text-brand-500 flex items-center justify-between">
+            3D Explorer
+            <span class="px-2 py-0.5 text-[10px] bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-full">Interactive</span>
+          </a>
+          <a href="#calculator" class="mobile-nav-link hover:text-brand-500">Kalkulyator</a>
+          <a href="#process" class="mobile-nav-link hover:text-brand-500">Jarayon</a>
+          <a href="#team" class="mobile-nav-link hover:text-brand-500">Jamoa</a>
+          <a href="#contact" class="mobile-nav-link hover:text-brand-500">Aloqa</a>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-slate-800">
+        <button onclick="openBookingModal()" class="w-full py-3.5 bg-brand-600 text-slate-950 font-bold rounded-xl text-center flex items-center justify-center gap-2">
+          <i data-lucide="phone-call" class="w-4 h-4"></i>
+          Loyiha Buyurtma Qilish
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION WITH THREE.JS CANVAS -->
+  <section id="hero" class="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden">
+    <!-- Three.js Canvas Background -->
+    <div id="hero-canvas-container" class="absolute inset-0 z-0">
+      <canvas id="hero-canvas" class="w-full h-full block opacity-80 dark:opacity-70"></canvas>
+    </div>
+
+    <!-- Gradient Overlay for readability -->
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/70 to-slate-950 pointer-events-none z-0"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-12">
+      <!-- Tag Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-brand-400 text-xs font-semibold uppercase tracking-widest mb-8 border border-brand-500/20 shadow-xl animate-bounce">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>Eksklyuziv Arxitektura va Interyer Yechimlari</span>
+      </div>
+
+      <!-- Main Title -->
+      <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 max-w-5xl mx-auto leading-tight">
+        Kelajak Me me'morchiligi va <br class="hidden sm:inline"/>
+        <span class="bg-gradient-to-r from-brand-300 via-brand-500 to-amber-200 bg-clip-text text-transparent">
+          Zamonaviy Interyer San'ati
+        </span>
+      </h1>
+
+      <!-- Description -->
+      <p class="text-slate-300 text-base sm:text-xl max-w-3xl mx-auto mb-10 leading-relaxed font-light">
+        Biz shunchaki binolar loyihalamaymiz — estetik mukammallik, funksionallik va ilg'or texnologiyalarni birlashtirgan hayotiy makonlarni barpo etamiz.
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16">
+        <a href="#projects" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold text-sm tracking-wider uppercase transition-all shadow-xl amber-glow flex items-center justify-center gap-3 group">
+          <span>Loyihalarni ko'rish</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+        <a href="#calculator" class="w-full sm:w-auto px-8 py-4 rounded-xl glass-panel hover:bg-slate-800/80 text-white font-semibold text-sm tracking-wider uppercase transition-all border border-slate-700 flex items-center justify-center gap-3">
+          <i data-lucide="calculator" class="w-4 h-4 text-brand-500"></i>
+          <span>Qiymatni Hisoblash</span>
+        </a>
+      </div>
+
+      <!-- Studio Statistics Counter Bar -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto pt-8 border-t border-slate-800/80">
+        <div class="glass-panel p-5 rounded-2xl text-center border border-slate-800">
+          <div class="text-3xl sm:text-4xl font-extrabold text-white mb-1 tracking-tight flex items-center justify-center">
+            <span class="counter" data-target="180">0</span>
+            <span class="text-brand-500">+</span>
+          </div>
+          <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Bajarilgan Loyihalar</div>
+        </div>
+
+        <div class="glass-panel p-5 rounded-2xl text-center border border-slate-800">
+          <div class="text-3xl sm:text-4xl font-extrabold text-white mb-1 tracking-tight flex items-center justify-center">
+            <span class="counter" data-target="14">0</span>
+            <span class="text-brand-500"> Yil</span>
+          </div>
+          <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Xalqaro Tajriba</div>
+        </div>
+
+        <div class="glass-panel p-5 rounded-2xl text-center border border-slate-800">
+          <div class="text-3xl sm:text-4xl font-extrabold text-white mb-1 tracking-tight flex items-center justify-center">
+            <span class="counter" data-target="25">0</span>
+            <span class="text-brand-500">+</span>
+          </div>
+          <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Mukofot & Sertifikatlar</div>
+        </div>
+
+        <div class="glass-panel p-5 rounded-2xl text-center border border-slate-800">
+          <div class="text-3xl sm:text-4xl font-extrabold text-white mb-1 tracking-tight flex items-center justify-center">
+            <span class="counter" data-target="99">0</span>
+            <span class="text-brand-500">%</span>
+          </div>
+          <div class="text-xs text-slate-400 font-medium uppercase tracking-wider">Mijozlar Mamnunligi</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PORTFOLIO / PROJECTS GALLERY SECTION -->
+  <section id="projects" class="py-24 relative bg-slate-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div>
+          <span class="text-brand-500 font-bold uppercase tracking-widest text-xs">Portfoliolarimiz</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">Tanlangan Mualliflik Loyihalari</h2>
+        </div>
+        <p class="text-slate-400 max-w-md text-sm mt-4 md:mt-0">
+          Biz yaratgan har bir obyekt — mijozning individual xarakteri va atrof-muhit bilan uyg'unlashgan noyob me'moriy asardir.
+        </p>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-10 no-scrollbar">
+        <button onclick="filterProjects('all')" class="filter-btn active px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all bg-brand-600 text-slate-950 shadow-md whitespace-nowrap" data-filter="all">
+          Barchasi (6)
+        </button>
+        <button onclick="filterProjects('turarjoy')" class="filter-btn px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 whitespace-nowrap" data-filter="turarjoy">
+          Turar-joy (Villalar)
+        </button>
+        <button onclick="filterProjects('jamoat')" class="filter-btn px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 whitespace-nowrap" data-filter="jamoat">
+          Tijorat & Jamoat Binolari
+        </button>
+        <button onclick="filterProjects('interyer')" class="filter-btn px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 whitespace-nowrap" data-filter="interyer">
+          Interyer Dizayn
+        </button>
+        <button onclick="filterProjects('landshaft')" class="filter-btn px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 whitespace-nowrap" data-filter="landshaft">
+          Landshaft & Park
+        </button>
+      </div>
+
+      <!-- Project Cards Grid -->
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Project 1 -->
+        <div class="project-card group glass-panel rounded-2xl overflow-hidden border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-brand-500/50" data-category="turarjoy">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" alt="Villa Horizon" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+            <span class="absolute top-4 left-4 bg-brand-500/90 text-slate-950 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md">Turar-joy</span>
+            <span class="absolute bottom-4 left-4 text-xs font-medium text-slate-300 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-500"></i> Toshkent, Mirzo Ulug'bek
+            </span>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition-colors">Villa Horizon Modern</h3>
+            <p class="text-slate-400 text-xs mt-2 line-clamp-2">Panoramik oyna devorlar va konsol ayvonlarga ega yuqori texnologiyali eksklyuziv shahar tashqarisi villasi.</p>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-1.5"><i data-lucide="maximize-2" class="w-3.5 h-3.5 text-brand-500"></i> 650 m²</div>
+              <div class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-500"></i> 2024</div>
+              <button onclick="openProjectModal(0)" class="text-brand-400 font-bold hover:underline flex items-center gap-1">
+                Batafsil <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-card group glass-panel rounded-2xl overflow-hidden border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-brand-500/50" data-category="jamoat">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80" alt="Oasis Business Center" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+            <span class="absolute top-4 left-4 bg-brand-500/90 text-slate-950 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md">Tijorat Bino</span>
+            <span class="absolute bottom-4 left-4 text-xs font-medium text-slate-300 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-500"></i> Toshkent City
+            </span>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition-colors">Oasis Tower & Plaza</h3>
+            <p class="text-slate-400 text-xs mt-2 line-clamp-2">Energiya tejamkor, zamonaviy vertikal fasadli premium darajadagi biznes va moliya markazi.</p>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-1.5"><i data-lucide="maximize-2" class="w-3.5 h-3.5 text-brand-500"></i> 4,200 m²</div>
+              <div class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-500"></i> 2023</div>
+              <button onclick="openProjectModal(1)" class="text-brand-400 font-bold hover:underline flex items-center gap-1">
+                Batafsil <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project-card group glass-panel rounded-2xl overflow-hidden border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-brand-500/50" data-category="interyer">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80" alt="Penthouse Luxury" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+            <span class="absolute top-4 left-4 bg-brand-500/90 text-slate-950 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md">Interyer</span>
+            <span class="absolute bottom-4 left-4 text-xs font-medium text-slate-300 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-500"></i> Samarqand Markazi
+            </span>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition-colors">Minimalist Luxury Penthouse</h3>
+            <p class="text-slate-400 text-xs mt-2 line-clamp-2">Issiq yog'och, marmar teksturalari va aqlli yoritish ssenariylariga ega shinam dupleks penthouse.</p>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-1.5"><i data-lucide="maximize-2" class="w-3.5 h-3.5 text-brand-500"></i> 320 m²</div>
+              <div class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-500"></i> 2024</div>
+              <button onclick="openProjectModal(2)" class="text-brand-400 font-bold hover:underline flex items-center gap-1">
+                Batafsil <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="project-card group glass-panel rounded-2xl overflow-hidden border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-brand-500/50" data-category="landshaft">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80" alt="Resort Villa" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+            <span class="absolute top-4 left-4 bg-brand-500/90 text-slate-950 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md">Landshaft</span>
+            <span class="absolute bottom-4 left-4 text-xs font-medium text-slate-300 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-500"></i> Buxoro
+            </span>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition-colors">Silk Road Garden Resort</h3>
+            <p class="text-slate-400 text-xs mt-2 line-clamp-2">Sharqona favvoralar, infinity hovuz va subtropik floraga ega landshaft park kompleks.</p>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-1.5"><i data-lucide="maximize-2" class="w-3.5 h-3.5 text-brand-500"></i> 8,500 m²</div>
+              <div class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-500"></i> 2023</div>
+              <button onclick="openProjectModal(3)" class="text-brand-400 font-bold hover:underline flex items-center gap-1">
+                Batafsil <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 5 -->
+        <div class="project-card group glass-panel rounded-2xl overflow-hidden border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-brand-500/50" data-category="turarjoy">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1000&q=80" alt="Eco Villa" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+            <span class="absolute top-4 left-4 bg-brand-500/90 text-slate-950 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md">Turar-joy</span>
+            <span class="absolute bottom-4 left-4 text-xs font-medium text-slate-300 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-500"></i> Toshkent, Qibray
+            </span>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition-colors">Eco Modern Residence</h3>
+            <p class="text-slate-400 text-xs mt-2 line-clamp-2">Tabiiy tosh va yog'och ishlov berish elementlaridan foydalanilgan ekologik barqaror villa.</p>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-1.5"><i data-lucide="maximize-2" class="w-3.5 h-3.5 text-brand-500"></i> 820 m²</div>
+              <div class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-500"></i> 2024</div>
+              <button onclick="openProjectModal(4)" class="text-brand-400 font-bold hover:underline flex items-center gap-1">
+                Batafsil <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 6 -->
+        <div class="project-card group glass-panel rounded-2xl overflow-hidden border border-slate-800/80 transition-all duration-300 hover:-translate-y-2 hover:border-brand-500/50" data-category="interyer">
+          <div class="relative h-64 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1000&q=80" alt="Art Gallery Interior" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80"></div>
+            <span class="absolute top-4 left-4 bg-brand-500/90 text-slate-950 font-bold text-[10px] uppercase tracking-wider px-3 py-1 rounded-md">Interyer</span>
+            <span class="absolute bottom-4 left-4 text-xs font-medium text-slate-300 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-500"></i> Toshkent
+            </span>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition-colors">Lumière Gallery & Showroom</h3>
+            <p class="text-slate-400 text-xs mt-2 line-clamp-2">Zamonaviy san'at asarlarini namoyish qilish uchun loyihalashtirilgan minimalist ekspozitsiya zali.</p>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-1.5"><i data-lucide="maximize-2" class="w-3.5 h-3.5 text-brand-500"></i> 1,500 m²</div>
+              <div class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-500"></i> 2023</div>
+              <button onclick="openProjectModal(5)" class="text-brand-400 font-bold hover:underline flex items-center gap-1">
+                Batafsil <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3D INTERACTIVE ARCHITECTURAL MODEL EXPLORER SECTION -->
+  <section id="3d-explorer" class="py-24 relative bg-slate-900/60 border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-400 text-xs font-semibold uppercase tracking-wider mb-3 border border-brand-500/20">
+          <i data-lucide="box" class="w-3.5 h-3.5"></i> Interaktiv 3D Modellashtirish
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white">Interaktiv 3D Bino Modeli</h2>
+        <p class="text-slate-400 text-sm mt-4">
+          Sichqoncha orqali binoni har tomondan aylantiring, qavatlarni ajratib ko'ring, yoritish rejimini hamda Wireframe karkasini sinab ko'ring.
+        </p>
+      </div>
+
+      <!-- 3D Canvas Box Container -->
+      <div class="relative glass-panel rounded-3xl overflow-hidden border border-slate-700 shadow-2xl h-[550px]">
+        
+        <!-- Three.js Canvas -->
+        <canvas id="building-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+
+        <!-- Floating UI Controls Panel (Top Left) -->
+        <div class="absolute top-6 left-6 z-20 flex flex-col gap-2">
+          <div class="glass-panel px-4 py-2 rounded-xl text-xs font-semibold text-slate-200 border border-slate-700/80 flex items-center gap-2">
+            <i data-lucide="mouse-pointer-click" class="w-4 h-4 text-brand-500"></i>
+            <span>Aylantirish: Sichqonchani suring</span>
+          </div>
+        </div>
+
+        <!-- Floating Controls Panel (Bottom Toolbar) -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 glass-panel px-4 py-3 rounded-2xl border border-slate-700/80 flex flex-wrap items-center gap-3 shadow-2xl max-w-[95%]">
+          
+          <!-- Floor Selectors -->
+          <div class="flex items-center bg-slate-900/90 rounded-xl p-1 border border-slate-800">
+            <button id="btn-floor-all" onclick="setFloorView('all')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-brand-600 text-slate-950 shadow">
+              To'liq Bino
+            </button>
+            <button id="btn-floor-1" onclick="setFloorView('floor1')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">
+              1-Qavat
+            </button>
+            <button id="btn-floor-2" onclick="setFloorView('floor2')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white">
+              2-Qavat
+            </button>
+          </div>
+
+          <div class="h-6 w-[1px] bg-slate-800 hidden sm:block"></div>
+
+          <!-- Wireframe Toggle -->
+          <button id="btn-wireframe" onclick="toggleWireframe()" class="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-xs font-bold text-slate-200 border border-slate-800 flex items-center gap-1.5 transition-all">
+            <i data-lucide="grid" class="w-3.5 h-3.5 text-brand-500"></i>
+            <span>Wireframe</span>
+          </button>
+
+          <!-- Day/Night Toggle -->
+          <button id="btn-daynight" onclick="toggleDayNight()" class="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-xs font-bold text-slate-200 border border-slate-800 flex items-center gap-1.5 transition-all">
+            <i data-lucide="moon" id="daynight-icon" class="w-3.5 h-3.5 text-brand-400"></i>
+            <span id="daynight-text">Tungi Yoritish</span>
+          </button>
+
+          <!-- Reset Camera -->
+          <button onclick="resetBuildingCamera()" class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-800" title="Kamerani Tiklash">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ARCHITECTURAL COST & SCOPE CALCULATOR SECTION -->
+  <section id="calculator" class="py-24 relative bg-slate-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-500 font-bold uppercase tracking-widest text-xs">Interaktiv Smeta</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">Loyiha Qiymatini Hisoblash</h2>
+        <p class="text-slate-400 text-sm mt-4">
+          Maydon parametri va qo'shimcha xizmat turlarini tanlang hamda loyihangizning taxminiy narxi va muddati bilan tanishing.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Controls Input Panel -->
+        <div class="lg:col-span-7 glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-8">
+          
+          <!-- Area Slider -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-sm font-semibold text-slate-200">Umumiy Maydon (m²)</label>
+              <span id="calc-area-val" class="text-2xl font-extrabold text-brand-400">250 m²</span>
+            </div>
+            <input type="range" id="calc-area" min="50" max="2000" step="10" value="250" oninput="updateCalculator()" class="w-full">
+            <div class="flex justify-between text-[11px] text-slate-500 mt-2 font-medium">
+              <span>50 m²</span>
+              <span>500 m²</span>
+              <span>1000 m²</span>
+              <span>2000 m²</span>
+            </div>
+          </div>
+
+          <!-- Project Type Select -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-200 mb-3">Loyiha Turi</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <button onclick="setCalcType('turarjoy', 25)" class="calc-type-btn active p-3 rounded-xl border border-brand-500 bg-brand-500/10 text-xs font-bold text-brand-400 text-center transition-all" data-type="turarjoy">
+                Turar-joy Villa
+              </button>
+              <button onclick="setCalcType('tijorat', 30)" class="calc-type-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-xs font-bold text-slate-300 text-center transition-all hover:bg-slate-800" data-type="tijorat">
+                Tijorat Binosi
+              </button>
+              <button onclick="setCalcType('interyer', 20)" class="calc-type-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-xs font-bold text-slate-300 text-center transition-all hover:bg-slate-800" data-type="interyer">
+                Interyer Dizayn
+              </button>
+              <button onclick="setCalcType('premium', 40)" class="calc-type-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-xs font-bold text-slate-300 text-center transition-all hover:bg-slate-800" data-type="premium">
+                Eksklyuziv Kompleks
+              </button>
+            </div>
+          </div>
+
+          <!-- Design Style Select -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-200 mb-3">Arxitektura Stili</label>
+            <select id="calc-style" onchange="updateCalculator()" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+              <option value="1.0">Minimalizm & Modernism (Standard)</option>
+              <option value="1.15">High-Tech & Parametrik (+15%)</option>
+              <option value="1.25">Neo-Klassika & Premium Art Deco (+25%)</option>
+              <option value="1.05">Skandinaviya & Organik (+5%)</option>
+            </select>
+          </div>
+
+          <!-- Extra Options Checkboxes -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-200 mb-3">Qo'shimcha Xizmatlar</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center gap-3 cursor-pointer hover:border-slate-700">
+                <input type="checkbox" id="extra-3d" checked onchange="updateCalculator()" class="w-4 h-4 accent-brand-500 rounded">
+                <span class="text-xs text-slate-300 font-medium">3D Fotorealistik Render (+$5/m²)</span>
+              </label>
+              <label class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center gap-3 cursor-pointer hover:border-slate-700">
+                <input type="checkbox" id="extra-supervision" checked onchange="updateCalculator()" class="w-4 h-4 accent-brand-500 rounded">
+                <span class="text-xs text-slate-300 font-medium">Mualliflik Nazorati (+$8/m²)</span>
+              </label>
+              <label class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center gap-3 cursor-pointer hover:border-slate-700">
+                <input type="checkbox" id="extra-landscape" onchange="updateCalculator()" class="w-4 h-4 accent-brand-500 rounded">
+                <span class="text-xs text-slate-300 font-medium">Landshaft Dizayni (+$6/m²)</span>
+              </label>
+              <label class="glass-panel p-3.5 rounded-xl border border-slate-800 flex items-center gap-3 cursor-pointer hover:border-slate-700">
+                <input type="checkbox" id="extra-engineering" checked onchange="updateCalculator()" class="w-4 h-4 accent-brand-500 rounded">
+                <span class="text-xs text-slate-300 font-medium">Smeta va Muhandislik Karkasi (+$4/m²)</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Calculated Summary Box -->
+        <div class="lg:col-span-5 glass-panel p-8 rounded-3xl border border-brand-500/30 amber-glow-sm relative">
+          <div class="flex items-center justify-between pb-6 border-b border-slate-800">
+            <h3 class="text-lg font-bold text-white">Hisoblangan Smeta</h3>
+            <span class="text-xs px-2.5 py-1 bg-brand-500/20 text-brand-400 font-bold rounded-lg uppercase">Taxminiy</span>
+          </div>
+
+          <div class="py-6 space-y-4">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Bazaviy Loyihalash:</span>
+              <span id="calc-base-price" class="font-bold text-white">$6,250</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Stil Koeffitsienti:</span>
+              <span id="calc-style-mult" class="font-bold text-white">1.0x</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Qo'shimcha Xizmatlar:</span>
+              <span id="calc-extras-price" class="font-bold text-white">$4,250</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Tahminiy Tayyorlanish Muddati:</span>
+              <span id="calc-duration" class="font-bold text-brand-400">25-30 Ish Kuni</span>
+            </div>
+          </div>
+
+          <!-- Total Display -->
+          <div class="pt-6 border-t border-slate-800 bg-slate-900/50 -mx-8 -mb-8 p-8 rounded-b-3xl">
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-bold block mb-1">Umumiy Qiymat:</span>
+            <div class="text-4xl font-extrabold text-brand-400 mb-6" id="calc-total">$10,500</div>
+
+            <button onclick="applyCalculatorToBooking()" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-slate-950 font-bold text-sm uppercase tracking-wider transition-all shadow-xl flex items-center justify-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Ushbu Smeta Bilan So'rov Yuborish</span>
+            </button>
+            <p class="text-[11px] text-slate-500 text-center mt-3">
+              * Aniq qiymat birinchi shaxsiy konsultatsiya va texnik topshiriqdan so'ng tasdiqlanadi.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROCESS & WORKFLOW TIMELINE SECTION -->
+  <section id="process" class="py-24 bg-slate-900/40 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-500 font-bold uppercase tracking-widest text-xs">Bosqichlar</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">Loyiha Amalga Oshish Jarayoni</h2>
+        <p class="text-slate-400 text-sm mt-4">G'oyadan tortib binoning kalit topshirilishigacha bo'lgan 4 ta shaffof va tizimli bosqich.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Step 1 -->
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 relative group hover:border-brand-500/50 transition-all">
+          <div class="text-5xl font-black text-slate-800 group-hover:text-brand-500/30 transition-colors mb-4">01</div>
+          <h3 class="text-lg font-bold text-white mb-2">Konsepsiya va Brif</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Mijoz istaklarini tahlil qilish, hududni o'rganish va birinchi 2D rezalitsiya chizmalari hamda moodboard tayyorlash.</p>
+          <div class="mt-6 flex items-center gap-2 text-[11px] text-brand-400 font-semibold">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i> 3-5 Kun
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 relative group hover:border-brand-500/50 transition-all">
+          <div class="text-5xl font-black text-slate-800 group-hover:text-brand-500/30 transition-colors mb-4">02</div>
+          <h3 class="text-lg font-bold text-white mb-2">3D Visualizatsiya</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Har bir xona, fasad va yoritish elementlarini fotorealistik 3D ko'rinishda namoyish etish va tasdiqlash.</p>
+          <div class="mt-6 flex items-center gap-2 text-[11px] text-brand-400 font-semibold">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i> 10-14 Kun
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 relative group hover:border-brand-500/50 transition-all">
+          <div class="text-5xl font-black text-slate-800 group-hover:text-brand-500/30 transition-colors mb-4">03</div>
+          <h3 class="text-lg font-bold text-white mb-2">Ishchi Hujjatlar</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Barcha muhandislik tarmoqlari, konstruktiv hisob-kitoblar, elektr va santexnika chizmalari to'plami.</p>
+          <div class="mt-6 flex items-center gap-2 text-[11px] text-brand-400 font-semibold">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i> 10-15 Kun
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 relative group hover:border-brand-500/50 transition-all">
+          <div class="text-5xl font-black text-slate-800 group-hover:text-brand-500/30 transition-colors mb-4">04</div>
+          <h3 class="text-lg font-bold text-white mb-2">Mualliflik Nazorati</h3>
+          <p class="text-slate-400 text-xs leading-relaxed">Qurilish maydonchasiga muntazam tashrif va chizmalarning 100% mosligini amalda nazorat qilish.</p>
+          <div class="mt-6 flex items-center gap-2 text-[11px] text-brand-400 font-semibold">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i> Qurilish Davomida
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TEAM & EXPERTS SECTION -->
+  <section id="team" class="py-24 bg-slate-950">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-brand-500 font-bold uppercase tracking-widest text-xs">Bizning Mutaxassislar</span>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">Tajribali Arxitektor va Dizaynerlar</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        
+        <!-- Member 1 -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800 group">
+          <div class="h-72 overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80" alt="Temur Rustamov" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 text-center -mt-8 relative z-10">
+            <h3 class="text-lg font-bold text-white">Temur Rustamov</h3>
+            <p class="text-xs text-brand-500 font-semibold mt-0.5">Bosh Arxitektor & Muassis</p>
+            <p class="text-slate-400 text-xs mt-3">15 yillik xalqaro arxitektura tajribasi. Milan va London akademiyalari bitiruvchisi.</p>
+          </div>
+        </div>
+
+        <!-- Member 2 -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800 group">
+          <div class="h-72 overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" alt="Malika Alimova" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 text-center -mt-8 relative z-10">
+            <h3 class="text-lg font-bold text-white">Malika Alimova</h3>
+            <p class="text-xs text-brand-500 font-semibold mt-0.5">Lead Interior Designer</p>
+            <p class="text-slate-400 text-xs mt-3">Lüks turar-joy va premium interyer dizayni bo'yicha ekspert.</p>
+          </div>
+        </div>
+
+        <!-- Member 3 -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800 group">
+          <div class="h-72 overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80" alt="Bobur Ismoilov" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 text-center -mt-8 relative z-10">
+            <h3 class="text-lg font-bold text-white">Bobur Ismoilov</h3>
+            <p class="text-xs text-brand-500 font-semibold mt-0.5">Bosh Muhandis-Konstruktor</p>
+            <p class="text-slate-400 text-xs mt-3">Murakkab karkas va baland qavatli bino konstruksiyalari hisob-kitobi bo'yicha mutaxassis.</p>
+          </div>
+        </div>
+
+        <!-- Member 4 -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800 group">
+          <div class="h-72 overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=80" alt="Shahnoza Karimova" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+          </div>
+          <div class="p-6 text-center -mt-8 relative z-10">
+            <h3 class="text-lg font-bold text-white">Shahnoza Karimova</h3>
+            <p class="text-xs text-brand-500 font-semibold mt-0.5">Landshaft Arxitektori</p>
+            <p class="text-slate-400 text-xs mt-3">Eko-muhit, park zonalari va eksklyuziv suv inshootlari dizayneri.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT & APPOINTMENT BOOKING SECTION -->
+  <section id="contact" class="py-24 bg-slate-900/60 border-t border-slate-800 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Contact Information -->
+        <div class="lg:col-span-5 space-y-8">
+          <div>
+            <span class="text-brand-500 font-bold uppercase tracking-widest text-xs">Aloqa va Bosh Ofis</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2">G'oyangizni Muhokama Qilaylik</h2>
+            <p class="text-slate-400 text-sm mt-4">Ofisimizga tashrif buyuring yoki bepul boshlang'ich konsultatsiya uchun ariza qoldiring.</p>
+          </div>
+
+          <div class="space-y-6">
+            <div class="flex items-start gap-4">
+              <div class="p-3 rounded-xl bg-brand-500/10 text-brand-500 border border-brand-500/20 shrink-0">
+                <i data-lucide="map-pin" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Bosh Ofis Manzili</h4>
+                <p class="text-xs text-slate-400 mt-1">Toshkent shahri, Amir Temur shox ko'chasi, 108-A uy (Tashkent City)</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="p-3 rounded-xl bg-brand-500/10 text-brand-500 border border-brand-500/20 shrink-0">
+                <i data-lucide="phone" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Telefon & Telegram</h4>
+                <p class="text-xs text-slate-400 mt-1">+998 (71) 200-88-00 / +998 (90) 123-45-67</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+              <div class="p-3 rounded-xl bg-brand-500/10 text-brand-500 border border-brand-500/20 shrink-0">
+                <i data-lucide="mail" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-white">Elektron Pochta</h4>
+                <p class="text-xs text-slate-400 mt-1">info@aura-architecture.uz</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Styled Map Mockup Canvas -->
+          <div class="glass-panel p-4 rounded-2xl border border-slate-800 h-48 relative overflow-hidden flex items-center justify-center">
+            <div class="absolute inset-0 bg-slate-900 opacity-90"></div>
+            <!-- Simulated map grid lines -->
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:2rem_2rem] opacity-40"></div>
+            <div class="relative z-10 text-center">
+              <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500 flex items-center justify-center mx-auto mb-2 animate-bounce">
+                <i data-lucide="map-pin" class="w-5 h-5"></i>
+              </div>
+              <span class="text-xs font-bold text-white block">AURA Studio Headquarters</span>
+              <span class="text-[10px] text-slate-400">Toshkent City, 108-A Block</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Direct Form Box -->
+        <div class="lg:col-span-7 glass-panel p-8 rounded-3xl border border-slate-800 shadow-2xl">
+          <h3 class="text-2xl font-bold text-white mb-6">Konsultatsiyaga Yozilish</h3>
+          <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ism-sharifingiz *</label>
+                <input type="text" id="form-name" required placeholder="Masalan: Jasur Rahimov" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Telefon Raqamingiz *</label>
+                <input type="tel" id="form-phone" required placeholder="+998 (90) 123-45-67" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Loyiha Turi</label>
+                <select id="form-type" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                  <option value="Turar-joy Villa">Turar-joy Villa</option>
+                  <option value="Tijorat Bino">Tijorat Bino</option>
+                  <option value="Interyer Dizayn">Interyer Dizayn</option>
+                  <option value="Landshaft Dizayn">Landshaft Dizayn</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Taxminiy Maydon (m²)</label>
+                <input type="number" id="form-area" placeholder="Masalan: 300" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Loyiha Haqida Qo'shimcha Izoh</label>
+              <textarea id="form-message" rows="4" placeholder="Obyekt joylashuvi, istaklaringiz va maxsus talablaringiz..." class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-slate-950 font-bold text-sm uppercase tracking-wider transition-all shadow-xl flex items-center justify-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Arizani Yuborish</span>
+            </button>
+
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PROJECT DETAILS MODAL -->
+  <div id="project-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+    <div class="glass-panel max-w-4xl w-full rounded-3xl overflow-hidden border border-slate-700 shadow-2xl max-h-[90vh] flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 id="modal-project-title" class="text-2xl font-bold text-white">Villa Horizon Modern</h3>
+          <p id="modal-project-loc" class="text-xs text-brand-500 mt-0.5">Toshkent, Mirzo Ulug'bek</p>
+        </div>
+        <button onclick="closeProjectModal()" class="p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-6">
+        
+        <!-- Interactive Before/After Image Comparison Slider -->
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">3D Render vs Realizatsiya Solishtiruvi</span>
+          <div class="relative h-80 rounded-2xl overflow-hidden select-none border border-slate-800" id="before-after-container">
+            <!-- Render Image (After) -->
+            <img id="modal-project-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" class="absolute inset-0 w-full h-full object-cover">
+            
+            <!-- Before Image (Clipped overlay) -->
+            <div id="before-image-wrapper" class="absolute inset-0 w-1/2 overflow-hidden border-r-2 border-brand-500">
+              <img id="modal-project-before-img" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80" class="absolute inset-0 max-w-none w-full h-full object-cover" style="width: 100%;">
+            </div>
+
+            <!-- Slider Range Control Overlay -->
+            <input type="range" min="0" max="100" value="50" id="before-after-slider" oninput="updateBeforeAfter(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20">
+            
+            <!-- Handle indicator -->
+            <div id="slider-handle" class="absolute top-0 bottom-0 left-1/2 -ml-3 w-6 pointer-events-none z-10 flex items-center justify-center">
+              <div class="w-6 h-6 rounded-full bg-brand-500 text-slate-950 flex items-center justify-center shadow-lg">
+                <i data-lucide="chevrons-left-right" class="w-3.5 h-3.5"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 text-center mt-2">Surat ustiga sichqonchani suring: Chap tomonda vizualizatsiya, o'ng tomonda qurilgan bino.</p>
+        </div>
+
+        <!-- Specifications Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase block">Umumiy Maydon</span>
+            <span id="modal-project-area" class="text-base font-bold text-white">650 m²</span>
+          </div>
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase block">Yil</span>
+            <span id="modal-project-year" class="text-base font-bold text-white">2024</span>
+          </div>
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase block">Bino Qavati</span>
+            <span id="modal-project-floors" class="text-base font-bold text-white">2 Qavat + Podval</span>
+          </div>
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase block">Uslub</span>
+            <span id="modal-project-style" class="text-base font-bold text-white">High-Tech Modern</span>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <h4 class="text-sm font-bold text-white mb-2">Loyiha Tafsilotlari</h4>
+          <p id="modal-project-desc" class="text-xs text-slate-300 leading-relaxed">
+            Ushbu loyiha energiya tejamkor konstruksiya hamda tabiat bilan uyg'unlashgan mualliflik interyerini o'zida mujassam etadi. Smart Home tizimlari va avtomatlashtirilgan quyosh panellari o'rnatilgan.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-6 border-t border-slate-800 bg-slate-900/50 flex flex-wrap items-center justify-between gap-4">
+        <button onclick="downloadPdfPresentation()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-2 border border-slate-700">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>PDF Taqdimotni Yuklab Olish</span>
+        </button>
+        <button onclick="closeProjectModal(); openBookingModal();" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold text-xs uppercase tracking-wider">
+          O'xshash Loyiha Buyurtma Qilish
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOOKING MODAL -->
+  <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+    <div class="glass-panel max-w-lg w-full rounded-3xl overflow-hidden border border-slate-700 shadow-2xl p-6 sm:p-8 relative">
+      <button onclick="closeBookingModal()" class="absolute top-6 right-6 p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white border border-slate-800">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="mb-6">
+        <span class="text-xs font-bold text-brand-500 uppercase tracking-widest">Shaxsiy Konsultatsiya</span>
+        <h3 class="text-2xl font-bold text-white mt-1">Uchrashuv Belgilash</h3>
+        <p class="text-xs text-slate-400 mt-1">Sizga qulay vaqtni tanlang, mutaxassisimiz siz bilan bog'lanadi.</p>
+      </div>
+
+      <form onsubmit="handleModalBookingSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Ismingiz *</label>
+          <input type="text" required id="modal-book-name" placeholder="Jasur Rahimov" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Telefon Raqam *</label>
+          <input type="tel" required id="modal-book-phone" placeholder="+998 (90) 123-45-67" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Qulay Uchrashuv Sanasi</label>
+          <input type="date" required id="modal-book-date" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Loyihangiz bo'yicha Izoh</label>
+          <textarea id="modal-book-notes" rows="3" placeholder="Loyiha maydoni va joylashuvi..." class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brand-500"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
+          Uchrashuvni Tasdiqlash
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUCCESS CONFIRMATION TOAST / MODAL -->
+  <div id="success-toast" class="fixed bottom-8 right-8 z-50 glass-panel border border-brand-500 p-5 rounded-2xl shadow-2xl max-w-sm transform translate-y-24 opacity-0 transition-all duration-300 flex items-center gap-4">
+    <div class="w-10 h-10 rounded-full bg-brand-500 text-slate-950 font-bold flex items-center justify-center shrink-0">
+      <i data-lucide="check" class="w-6 h-6"></i>
+    </div>
+    <div>
+      <h4 class="text-sm font-bold text-white">Arizangiz Qabul Qilindi!</h4>
+      <p class="text-xs text-slate-300 mt-0.5">Tez orada arxitektorimiz siz bilan bog'lanadi.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER SECTION -->
+  <footer class="bg-slate-950 border-t border-slate-800/80 pt-16 pb-8 text-slate-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-slate-800">
+        
+        <!-- Brand Info -->
+        <div class="space-y-4 md:col-span-1">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand-500 text-slate-950 font-bold flex items-center justify-center">A</div>
+            <span class="text-lg font-extrabold text-white tracking-wider">AURA</span>
+          </div>
+          <p class="text-slate-400 leading-relaxed">
+            Eksklyuziv arxitektura va zamonaviy interyer dizayni studiyasi. Toshkent, Samarqand va Dubayda mualliflik loyihalari.
+          </p>
+        </div>
+
+        <!-- Navigation Links -->
+        <div>
+          <h4 class="text-white font-bold text-sm mb-4">Navigatsiya</h4>
+          <ul class="space-y-2.5">
+            <li><a href="#about" class="hover:text-brand-500 transition-colors">Biz Haqimizda</a></li>
+            <li><a href="#projects" class="hover:text-brand-500 transition-colors">Loyihalarimiz</a></li>
+            <li><a href="#3d-explorer" class="hover:text-brand-500 transition-colors">3D Modellar</a></li>
+            <li><a href="#calculator" class="hover:text-brand-500 transition-colors">Smeta Kalkulyatori</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <h4 class="text-white font-bold text-sm mb-4">Xizmatlarimiz</h4>
+          <ul class="space-y-2.5">
+            <li><a href="#" class="hover:text-brand-500 transition-colors">Individual Villalar Loyihasi</a></li>
+            <li><a href="#" class="hover:text-brand-500 transition-colors">Tijorat Binolari Arxitekturasi</a></li>
+            <li><a href="#" class="hover:text-brand-500 transition-colors">Lüks Interyer Dizayni</a></li>
+            <li><a href="#" class="hover:text-brand-500 transition-colors">Mualliflik Nazorati</a></li>
+          </ul>
+        </div>
+
+        <!-- Social & Contact -->
+        <div>
+          <h4 class="text-white font-bold text-sm mb-4">Ijtimoiy Tarmoqlar</h4>
+          <div class="flex items-center gap-3 mb-4">
+            <a href="#" class="p-2.5 rounded-xl bg-slate-900 hover:bg-brand-600 hover:text-slate-950 transition-all border border-slate-800">
+              <i data-lucide="instagram" class="w-4 h-4"></i>
+            </a>
+            <a href="#" class="p-2.5 rounded-xl bg-slate-900 hover:bg-brand-600 hover:text-slate-950 transition-all border border-slate-800">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </a>
+            <a href="#" class="p-2.5 rounded-xl bg-slate-900 hover:bg-brand-600 hover:text-slate-950 transition-all border border-slate-800">
+              <i data-lucide="youtube" class="w-4 h-4"></i>
+            </a>
+          </div>
+          <p class="text-[11px] text-slate-500">Ish vaqti: Dushanba - Shanba, 09:00 - 19:00</p>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-4">
+        <p>© 2026 AURA Architecture Studio. Barcha huquqlar himoyalangan.</p>
+        <div class="flex items-center gap-6">
+          <a href="#" class="hover:text-slate-400">Maxfiylik Siyosati</a>
+          <a href="#" class="hover:text-slate-400">Foydalanish Shartlari</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide icons
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initHeroThreeJS();
+      initBuildingThreeJS();
+      initCounterObserver();
+      updateCalculator();
+    });
+
+    // Dark/Light Theme Toggle
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      document.documentElement.classList.toggle('light');
+    });
+
+    // Mobile Navigation Drawer Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const closeDrawerBtn = document.getElementById('close-drawer-btn');
+    const mobileDrawer = document.getElementById('mobile-drawer');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+    mobileMenuBtn.addEventListener('click', () => mobileDrawer.classList.remove('translate-x-full'));
+    closeDrawerBtn.addEventListener('click', () => mobileDrawer.classList.add('translate-x-full'));
+    mobileNavLinks.forEach(link => {
+      link.addEventListener('click', () => mobileDrawer.classList.add('translate-x-full'));
+    });
+
+    // THREE.JS HERO CANVAS SCENE
+    let heroScene, heroCamera, heroRenderer, heroMesh, heroParticles;
+
+    function initHeroThreeJS() {
+      const container = document.getElementById('hero-canvas-container');
+      const canvas = document.getElementById('hero-canvas');
+
+      heroScene = new THREE.Scene();
+      heroCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      heroCamera.position.z = 18;
+
+      heroRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      heroRenderer.setSize(window.innerWidth, window.innerHeight);
+      heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Create Parametric Architectural Geometric Mesh
+      const geometry = new THREE.IcosahedronGeometry(7, 2);
+      const material = new THREE.MeshStandardMaterial({
+        color: 0xd97706,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.25,
+        roughness: 0.2
+      });
+      heroMesh = new THREE.Mesh(geometry, material);
+      heroScene.add(heroMesh);
+
+      // Inner Core Glow Sphere
+      const innerGeo = new THREE.IcosahedronGeometry(4, 1);
+      const innerMat = new THREE.MeshBasicMaterial({
+        color: 0xf59e0b,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.15
+      });
+      const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+      heroMesh.add(innerMesh);
+
+      // Particle Nodes floating around
+      const particleGeo = new THREE.BufferGeometry();
+      const count = 120;
+      const positions = new Float32Array(count * 3);
+
+      for (let i = 0; i < count * 3; i++) {
+        positions[i] = (Math.random() - 0.5) * 40;
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const particleMat = new THREE.PointsMaterial({
+        size: 0.15,
+        color: 0xd97706,
+        transparent: true,
+        opacity: 0.6
+      });
+      heroParticles = new THREE.Points(particleGeo, particleMat);
+      heroScene.add(heroParticles);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      heroScene.add(ambientLight);
+
+      const pointLight = new THREE.PointLight(0xd97706, 2, 50);
+      pointLight.position.set(10, 10, 10);
+      heroScene.add(pointLight);
+
+      // Mouse Parallax Effect
+      let mouseX = 0, mouseY = 0;
+      window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
+        mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
+      });
+
+      // Animation Loop
+      function animateHero() {
+        requestAnimationFrame(animateHero);
+
+        heroMesh.rotation.y += 0.002;
+        heroMesh.rotation.x += 0.001;
+        heroParticles.rotation.y -= 0.001;
+
+        heroCamera.position.x += (mouseX * 10 - heroCamera.position.x) * 0.05;
+        heroCamera.position.y += (-mouseY * 10 - heroCamera.position.y) * 0.05;
+        heroCamera.lookAt(heroScene.position);
+
+        heroRenderer.render(heroScene, heroCamera);
+      }
+      animateHero();
+
+      window.addEventListener('resize', () => {
+        heroCamera.aspect = window.innerWidth / window.innerHeight;
+        heroCamera.updateProjectionMatrix();
+        heroRenderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+
+    // THREE.JS BUILDING EXPLORER SCENE
+    let buildScene, buildCamera, buildRenderer, buildControls;
+    let floor1Group, floor2Group, roofGroup;
+    let buildingMaterials = [];
+    let isWireframe = false;
+    let isNightMode = true;
+
+    function initBuildingThreeJS() {
+      const canvas = document.getElementById('building-canvas');
+      const rect = canvas.parentElement.getBoundingClientRect();
+
+      buildScene = new THREE.Scene();
+      buildScene.background = new THREE.Color(0x090d16);
+
+      buildCamera = new THREE.PerspectiveCamera(45, rect.width / rect.height, 0.1, 1000);
+      buildCamera.position.set(18, 14, 22);
+
+      buildRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      buildRenderer.setSize(rect.width, rect.height);
+      buildRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      buildRenderer.shadowMap.enabled = true;
+
+      // Orbit Controls
+      buildControls = new THREE.OrbitControls(buildCamera, buildRenderer.domElement);
+      buildControls.enableDamping = true;
+      buildControls.dampingFactor = 0.05;
+      buildControls.maxPolarAngle = Math.PI / 2 - 0.01;
+
+      // Groups for Floor Levels
+      floor1Group = new THREE.Group();
+      floor2Group = new THREE.Group();
+      roofGroup = new THREE.Group();
+
+      buildScene.add(floor1Group);
+      buildScene.add(floor2Group);
+      buildScene.add(roofGroup);
+
+      // Building Materials
+      const concreteMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 });
+      const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.4, transmission: 0.6, roughness: 0.1 });
+      const woodMat = new THREE.MeshStandardMaterial({ color: 0x92400e, roughness: 0.6 });
+      const accentMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.3 });
+
+      buildingMaterials.push(concreteMat, glassMat, woodMat, accentMat);
+
+      // Ground Base Slab
+      const baseGeo = new THREE.BoxGeometry(16, 0.4, 14);
+      const baseMesh = new THREE.Mesh(baseGeo, concreteMat);
+      baseMesh.position.y = -0.2;
+      buildScene.add(baseMesh);
+
+      // --- 1-QAVAT (GROUND FLOOR) ---
+      // Floor Slab
+      const f1Slab = new THREE.Mesh(new THREE.BoxGeometry(12, 0.3, 10), concreteMat);
+      f1Slab.position.y = 0.15;
+      floor1Group.add(f1Slab);
+
+      // Main Glass Facade Walls
+      const f1Glass = new THREE.Mesh(new THREE.BoxGeometry(11.8, 3, 9.8), glassMat);
+      f1Glass.position.y = 1.65;
+      floor1Group.add(f1Glass);
+
+      // Interior Accent Pillars
+      const p1 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 3, 0.5), woodMat);
+      p1.position.set(-5.5, 1.65, 4.5);
+      floor1Group.add(p1);
+
+      const p2 = p1.clone(); p2.position.set(5.5, 1.65, 4.5); floor1Group.add(p2);
+      const p3 = p1.clone(); p3.position.set(-5.5, 1.65, -4.5); floor1Group.add(p3);
+      const p4 = p1.clone(); p4.position.set(5.5, 1.65, -4.5); floor1Group.add(p4);
+
+      // --- 2-QAVAT (UPPER FLOOR) ---
+      // Floor Slab
+      const f2Slab = new THREE.Mesh(new THREE.BoxGeometry(13, 0.4, 11), concreteMat);
+      f2Slab.position.y = 3.35;
+      floor2Group.add(f2Slab);
+
+      // Cantilevered Upper Box
+      const f2Box = new THREE.Mesh(new THREE.BoxGeometry(10, 3, 9), concreteMat);
+      f2Box.position.set(-1, 5, 0);
+      floor2Group.add(f2Box);
+
+      // Upper Glass Balcony
+      const f2Glass = new THREE.Mesh(new THREE.BoxGeometry(12.8, 2.8, 10.8), glassMat);
+      f2Glass.position.set(0, 4.9, 0);
+      floor2Group.add(f2Glass);
+
+      // Decorative Accent Louvers
+      const louver = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 0.1), accentMat);
+      for (let i = -4; i <= 4; i += 1.2) {
+        const l = louver.clone();
+        l.position.set(i, 5, 4.6);
+        floor2Group.add(l);
+      }
+
+      // --- ROOF & KARKAS ---
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(14, 0.3, 12), woodMat);
+      roof.position.y = 6.6;
+      roofGroup.add(roof);
+
+      // Lights Setup
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+      buildScene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xd97706, 1.5);
+      dirLight.position.set(15, 25, 15);
+      buildScene.add(dirLight);
+
+      // Interior Golden Warm Spotlights
+      const warmLight1 = new THREE.PointLight(0xf59e0b, 2, 10);
+      warmLight1.position.set(0, 2, 0);
+      floor1Group.add(warmLight1);
+
+      const warmLight2 = new THREE.PointLight(0xf59e0b, 2, 10);
+      warmLight2.position.set(0, 5, 0);
+      floor2Group.add(warmLight2);
+
+      // Animation Loop
+      function animateBuilding() {
+        requestAnimationFrame(animateBuilding);
+        buildControls.update();
+        buildRenderer.render(buildScene, buildCamera);
+      }
+      animateBuilding();
+
+      // Canvas Responsive Resize
+      window.addEventListener('resize', () => {
+        if (!canvas.parentElement) return;
+        const r = canvas.parentElement.getBoundingClientRect();
+        buildCamera.aspect = r.width / r.height;
+        buildCamera.updateProjectionMatrix();
+        buildRenderer.setSize(r.width, r.height);
+      });
+    }
+
+    // 3D Building Interactive Controls Functions
+    function setFloorView(floor) {
+      document.querySelectorAll('#3d-explorer button[id^="btn-floor-"]').forEach(btn => {
+        btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-300 hover:text-white";
+      });
+      document.getElementById('btn-floor-' + (floor === 'all' ? 'all' : floor === 'floor1' ? '1' : '2')).className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-brand-600 text-slate-950 shadow";
+
+      if (floor === 'all') {
+        floor1Group.visible = true;
+        floor2Group.visible = true;
+        roofGroup.visible = true;
+        floor1Group.position.y = 0;
+        floor2Group.position.y = 0;
+        roofGroup.position.y = 0;
+      } else if (floor === 'floor1') {
+        floor1Group.visible = true;
+        floor2Group.visible = false;
+        roofGroup.visible = false;
+      } else if (floor === 'floor2') {
+        floor1Group.visible = false;
+        floor2Group.visible = true;
+        roofGroup.visible = false;
+        floor2Group.position.y = -3;
+      }
+    }
+
+    function toggleWireframe() {
+      isWireframe = !isWireframe;
+      buildingMaterials.forEach(mat => mat.wireframe = isWireframe);
+      const btn = document.getElementById('btn-wireframe');
+      btn.classList.toggle('border-brand-500');
+    }
+
+    function toggleDayNight() {
+      isNightMode = !isNightMode;
+      const icon = document.getElementById('daynight-icon');
+      const text = document.getElementById('daynight-text');
+
+      if (isNightMode) {
+        buildScene.background.setHex(0x090d16);
+        text.innerText = "Tungi Yoritish";
+        icon.setAttribute('data-lucide', 'moon');
+      } else {
+        buildScene.background.setHex(0xe2e8f0);
+        text.innerText = "Kunduzgi Yoritish";
+        icon.setAttribute('data-lucide', 'sun');
+      }
+      lucide.createIcons();
+    }
+
+    function resetBuildingCamera() {
+      buildCamera.position.set(18, 14, 22);
+      buildControls.target.set(0, 3, 0);
+      setFloorView('all');
+    }
+
+    // CALCULATOR LOGIC
+    let currentCalcBase = 25; // USD per m²
+
+    function setCalcType(type, basePrice) {
+      currentCalcBase = basePrice;
+      document.querySelectorAll('.calc-type-btn').forEach(btn => {
+        btn.classList.remove('active', 'border-brand-500', 'bg-brand-500/10', 'text-brand-400');
+        btn.classList.add('border-slate-800', 'bg-slate-900', 'text-slate-300');
+      });
+
+      const activeBtn = document.querySelector(`.calc-type-btn[data-type="${type}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'border-brand-500', 'bg-brand-500/10', 'text-brand-400');
+      }
+      updateCalculator();
+    }
+
+    function updateCalculator() {
+      const area = parseInt(document.getElementById('calc-area').value);
+      document.getElementById('calc-area-val').innerText = area + ' m²';
+
+      const styleMult = parseFloat(document.getElementById('calc-style').value);
+      document.getElementById('calc-style-mult').innerText = styleMult + 'x';
+
+      let extraPerSq = 0;
+      if (document.getElementById('extra-3d').checked) extraPerSq += 5;
+      if (document.getElementById('extra-supervision').checked) extraPerSq += 8;
+      if (document.getElementById('extra-landscape').checked) extraPerSq += 6;
+      if (document.getElementById('extra-engineering').checked) extraPerSq += 4;
+
+      const basePriceTotal = area * currentCalcBase;
+      const extrasPriceTotal = area * extraPerSq;
+      const grandTotal = Math.round((basePriceTotal + extrasPriceTotal) * styleMult);
+
+      document.getElementById('calc-base-price').innerText = '$' + basePriceTotal.toLocaleString();
+      document.getElementById('calc-extras-price').innerText = '$' + extrasPriceTotal.toLocaleString();
+      document.getElementById('calc-total').innerText = '$' + grandTotal.toLocaleString();
+
+      // Duration estimation
+      let days = Math.round(15 + (area / 30));
+      document.getElementById('calc-duration').innerText = `${days}-${days + 10} Ish Kuni`;
+    }
+
+    function applyCalculatorToBooking() {
+      const area = document.getElementById('calc-area').value;
+      const total = document.getElementById('calc-total').innerText;
+
+      document.getElementById('form-area').value = area;
+      document.getElementById('form-message').value = `Hisoblangan smeta: ${total}. Maydon: ${area} m². Swita bo'yicha loyihani muhokama qilmoqchiman.`;
+
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // PORTFOLIO FILTERING
+    function filterProjects(category) {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-slate-950');
+        btn.classList.add('bg-slate-900', 'text-slate-300');
+      });
+      const activeBtn = document.querySelector(`.filter-btn[data-filter="${category}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-brand-600', 'text-slate-950');
+      }
+
+      const cards = document.querySelectorAll('.project-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // PROJECT DETAILS MODAL DATA
+    const projectsData = [
+      {
+        title: "Villa Horizon Modern",
+        loc: "Toshkent, Mirzo Ulug'bek",
+        area: "650 m²",
+        year: "2024",
+        floors: "2 Qavat + Podval",
+        style: "High-Tech Modern",
+        img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        beforeImg: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+        desc: "Panoramik oyna devorlar va konsol ayvonlarga ega yuqori texnologiyali eksklyuziv shahar tashqarisi villasi. Smart Home boshqaruv tizimlari integratsiya qilingan."
+      },
+      {
+        title: "Oasis Business Center",
+        loc: "Toshkent City",
+        area: "4,200 m²",
+        year: "2023",
+        floors: "12 Qavat",
+        style: "Futuristik Tijorat",
+        img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+        beforeImg: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=1200&q=80",
+        desc: "Energiya tejamkor, zamonaviy vertikal fasadli premium darajadagi biznes va moliya markazi."
+      },
+      {
+        title: "Minimalist Penthouse",
+        loc: "Samarqand Markazi",
+        area: "320 m²",
+        year: "2024",
+        floors: "Dupleks Upper Floor",
+        style: "Warm Minimalizm",
+        img: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
+        beforeImg: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+        desc: "Issiq yog'och, marmar teksturalari va aqlli yoritish ssenariylariga ega shinam dupleks penthouse."
+      },
+      {
+        title: "Silk Road Resort",
+        loc: "Buxoro",
+        area: "8,500 m²",
+        year: "2023",
+        floors: "1-2 Qavatli Majmua",
+        style: "Eko Landshaft & Neoklassika",
+        img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+        beforeImg: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80",
+        desc: "Sharqona favvoralar, infinity hovuz va subtropik floraga ega landshaft park kompleks."
+      },
+      {
+        title: "Eco Modern Residence",
+        loc: "Toshkent, Qibray",
+        area: "820 m²",
+        year: "2024",
+        floors: "2 Qavat",
+        style: "Organik Arxitektura",
+        img: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
+        beforeImg: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
+        desc: "Tabiiy tosh va yog'och ishlov berish elementlaridan foydalanilgan ekologik barqaror villa."
+      },
+      {
+        title: "Lumière Art Gallery",
+        loc: "Toshkent",
+        area: "1,500 m²",
+        year: "2023",
+        floors: "1 Qavat Open-Space",
+        style: "Industrial Minimalizm",
+        img: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80",
+        beforeImg: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80",
+        desc: "Zamonaviy san'at asarlarini namoyish qilish uchun loyihalashtirilgan minimalist ekspozitsiya zali."
+      }
+    ];
+
+    function openProjectModal(index) {
+      const data = projectsData[index];
+      document.getElementById('modal-project-title').innerText = data.title;
+      document.getElementById('modal-project-loc').innerText = data.loc;
+      document.getElementById('modal-project-area').innerText = data.area;
+      document.getElementById('modal-project-year').innerText = data.year;
+      document.getElementById('modal-project-floors').innerText = data.floors;
+      document.getElementById('modal-project-style').innerText = data.style;
+      document.getElementById('modal-project-desc').innerText = data.desc;
+
+      document.getElementById('modal-project-img').src = data.img;
+      document.getElementById('modal-project-before-img').src = data.beforeImg;
+
+      updateBeforeAfter(50);
+
+      const modal = document.getElementById('project-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeProjectModal() {
+      const modal = document.getElementById('project-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    function updateBeforeAfter(val) {
+      const wrapper = document.getElementById('before-image-wrapper');
+      const handle = document.getElementById('slider-handle');
+      if (wrapper && handle) {
+        wrapper.style.width = val + '%';
+        handle.style.left = val + '%';
+      }
+    }
+
+    function downloadPdfPresentation() {
+      showToast("PDF Taqdimot tayyorlanmoqda va yuklab olinmoqda...");
+    }
+
+    // BOOKING MODAL LOGIC
+    function openBookingModal() {
+      const modal = document.getElementById('booking-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeBookingModal() {
+      const modal = document.getElementById('booking-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      showToast("Arizangiz qabul qilindi! Tez orada bog'lanamiz.");
+      document.getElementById('contact-form').reset();
+    }
+
+    function handleModalBookingSubmit(e) {
+      e.preventDefault();
+      closeBookingModal();
+      showToast("Uchrashuv muvaffaqiyatli belgilandi!");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('success-toast');
+      if (message) {
+        toast.querySelector('p').innerText = message;
+      }
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 4000);
+    }
+
+    // COUNTER STATS ANIMATION
+    function initCounterObserver() {
+      const counters = document.querySelectorAll('.counter');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const target = +entry.target.getAttribute('data-target');
+            let count = 0;
+            const speed = target / 50;
+            const updateCount = () => {
+              count += speed;
+              if (count < target) {
+                entry.target.innerText = Math.ceil(count);
+                setTimeout(updateCount, 30);
+              } else {
+                entry.target.innerText = target;
+              }
+            };
+            updateCount();
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      counters.forEach(counter => observer.observe(counter));
+    }
+  </script>
+</body>
+</html>
